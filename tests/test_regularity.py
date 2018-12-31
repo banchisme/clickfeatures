@@ -11,13 +11,13 @@ from scipy import stats, fftpack
 def reg_obj():
     length = 60 * 24
     ts = np.array(sorted(random.sample(range(length), length / 2)))
-    obj = regularity.Regularity(ts, end=length - 1)
+    obj = regularity.TimeRegularity(ts, end=length - 1)
     return obj
 
 
 @pytest.fixture
 def null_obj():
-    return regularity.Regularity([0])
+    return regularity.TimeRegularity([0])
 
 
 @pytest.fixture
@@ -31,8 +31,8 @@ def wave_objs():
     xt2 = sin_waves(10, f2, N * 7, T)
     ts1 = create_timestamps(xt1)
     ts2 = create_timestamps(xt2)
-    obj1 = regularity.Regularity(ts1, end=N - 1)
-    obj2 = regularity.Regularity(ts2, end=N * 7 - 1)
+    obj1 = regularity.TimeRegularity(ts1, end=N - 1)
+    obj2 = regularity.TimeRegularity(ts2, end=N * 7 - 1)
 
     return [(f1, obj1), (f2, obj2)]
 
@@ -51,7 +51,7 @@ def create_timestamps(xt, pct=80):
 
 def test_pdh_pwd():
     size = 24 * 7
-    obj = regularity.Regularity(np.array(range(size)) * 60, end=size * 60 - 1)
+    obj = regularity.TimeRegularity(np.array(range(size)) * 60, end=size * 60 - 1)
 
     assert obj.pdh() == pytest.approx(
         7 * (math.log(24, 2) - stats.entropy(np.ones(24) / 24., base=2)), 0.001)
@@ -65,7 +65,7 @@ def test_profile():
         the profile function returns a matrix of 24s
     """
     size = 24 * 7 * 7
-    obj = regularity.Regularity(np.array(range(size)) * 60, end=size * 60 - 1)
+    obj = regularity.TimeRegularity(np.array(range(size)) * 60, end=size * 60 - 1)
 
     res = obj._week_profile()
     for col in res:
@@ -75,7 +75,7 @@ def test_profile():
 
 def test_active_days():
     p = np.array([1, 2, 5, 0, 0, 0, 0])
-    obj = regularity.Regularity([0])
+    obj = regularity.TimeRegularity([0])
     assert obj._active_days(p) == set([0, 1, 2])
 
 
@@ -123,8 +123,8 @@ def test_ws():
     t1 = np.array(range(size))
     t2 = np.array(sorted(random.sample(range(size), size / 10)))
 
-    obj1 = regularity.Regularity(t1 * 60, end=size * 60 - 1)
-    obj2 = regularity.Regularity(t2 * 60, end=size * 60 - 1)
+    obj1 = regularity.TimeRegularity(t1 * 60, end=size * 60 - 1)
+    obj2 = regularity.TimeRegularity(t2 * 60, end=size * 60 - 1)
 
     assert obj1.ws1() == obj1.ws2() == obj1.ws3() == 1
     assert obj1.ws1() > obj2.ws1()
@@ -149,7 +149,7 @@ def test_fft(null_obj):
 
 def test_get_signal():
     ts = np.array([1, 3, 5, 12, 65, 77, 89, 199, 1088])
-    obj = regularity.Regularity(ts)
+    obj = regularity.TimeRegularity(ts)
     result = obj._get_signal(60)
     expect = np.array(
         [1., 1., 0., 1., 0., 0., 0., 0., 0., 0.,
@@ -166,7 +166,7 @@ def test_freq_based_reg():
     xt = sin_waves(a, f, N, T)
     ts = create_timestamps(xt)
     window = 60
-    obj = regularity.Regularity(ts, end=N - 1)
+    obj = regularity.TimeRegularity(ts, end=N - 1)
     nearby = [f + i * f / 15 for i in range(-10, 10) if i != 0]
     nearby_fft = [obj._freq_based_reg(freq, window) for freq in nearby]
     assert obj._freq_based_reg(f, window) > 5 * max(nearby_fft)

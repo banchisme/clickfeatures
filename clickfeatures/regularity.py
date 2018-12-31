@@ -6,7 +6,7 @@ import timeseries
 import collections
 
 
-class Regularity(object):
+class TimeRegularity(object):
     def __init__(self, *args, **kwargs):
         r"""
             time is stored based on the unit
@@ -266,18 +266,6 @@ class ActivityRegularity(object):
         # change acts into a list of pmf
         self.activity_names = activity_names
         self.activities = np.array(activities, dtype=np.float64)
-        # self.pmfs = []
-        # self.weights = []
-        # for activity in activities:
-        #     # normalize
-        #     histgram = np.array(activity)
-        #     if histgram.sum() > 0:
-        #         self.weights.append(histgram.sum())
-        #         pmf = histgram / histgram.sum()
-        #         self.pmfs.append(pmf)
-        # # format
-        # self.pmfs = np.vstack(self.pmfs)
-        # self.weights = np.array(self.weights) / sum(self.weights)
 
     def jsd(self, weighted=False, base=2):
         r"""
@@ -286,7 +274,7 @@ class ActivityRegularity(object):
                 Default::False
             base (float or int): base of entropy
         Return:
-            Jensen-Shannon divergence among self.pmfs
+            Jensen-Shannon divergence among pmfs
         """
 
         if weighted:
@@ -308,9 +296,9 @@ class ActivityRegularity(object):
     def concentration(self, base=2):
         r"""
         Argument:
-            base (numeric, optional) base for entropy, Default::2
+            base (numeric, optional): base for entropy, Default::2
         Return
-            entropy of stacked daily activity
+            entropy of stacked daily: activity
         """
         stack = self.activities.sum(axis=0) / self.activities.sum()
         return 1 - (
@@ -318,6 +306,14 @@ class ActivityRegularity(object):
             stats.entropy([1] * stack.shape[0], base=base))
 
     def get_regularity(self, weighted=True, base=2):
+        r"""
+        Argument:
+            weigthed (bool, optional): decide if jsd between pmfs are weighted.
+                Default:: True
+            base (numerical, optional): base for stats.entropy
+        Return:
+            activity regularity
+        """
         return {
-        'consitency': 1 - self.jsd(weighted=weighted, base=base), 
-        'concentration': self.concentration(base=base)}
+            'consitency': 1 - self.jsd(weighted=weighted, base=base),
+            'concentration': self.concentration(base=base)}
