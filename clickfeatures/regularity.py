@@ -245,3 +245,79 @@ class Regularity(object):
         for indicator in indicators:
             res[indicator] = getattr(self, indicator)()
         return res
+
+
+class ActivityRegularity(object):
+    def __init__(self, activity_names, activities):
+        r"""
+        Argument:
+            activity_names (list): name of activities
+            activities (list of lists): each inside list represents the weights
+                of activities at a timestamp.
+        Return:
+            None
+
+        Example:
+            a student has:
+            50 forum activity in day 1, 40 forum activity in day 2,
+            30 content activity in day 1, 0 content activity in day 2
+            ar = ActivityRegularity(['forum', 'content'], [[50, 30], [40, 0]])
+        """
+        # change acts into a list of pmf
+        self.activity_names = activity_names
+        self.activities = np.array(activities, dtype=np.float64)
+        # self.pmfs = []
+        # self.weights = []
+        # for activity in activities:
+        #     # normalize
+        #     histgram = np.array(activity)
+        #     if histgram.sum() > 0:
+        #         self.weights.append(histgram.sum())
+        #         pmf = histgram / histgram.sum()
+        #         self.pmfs.append(pmf)
+        # # format
+        # self.pmfs = np.vstack(self.pmfs)
+        # self.weights = np.array(self.weights) / sum(self.weights)
+
+    def jsd(self, weighted=False, base=2):
+        r"""
+        Argument:
+            weighted (bool, optional): wether weight pmf by a weight
+                Default::False
+            base (float or int): base of entropy
+        Return:
+            Jensen-Shannon divergence among self.pmfs
+        """
+
+        if weighted:
+            weights = self.activities.sum(axis=1) / self.activities.sum()
+        else:
+            num_rows = self.activities.shape[0]
+            weights = np.full(num_rows, 1. / num_rows)
+
+        pmfs = self.activities / self.activities.sum(axis=1).reshape((-1, 1))
+        weighted_pmfs = np.dot(weights, pmfs)
+        pmf_entropies = np.apply_along_axis(
+            stats.entropy, 1, pmfs, base=base)
+        divergence = (
+            stats.entropy(weighted_pmfs, base=base) -
+            np.dot(weights, pmf_entropies))
+
+        return divergence
+
+    def concentration(self, base=2):
+        r"""
+        Argument:
+            base (numeric, optional) base for entropy, Default::2
+        Return
+            entropy of stacked daily activity
+        """
+        stack = self.activities.sum(axis=0) / self.activities.sum()
+        return 1 - (
+            stats.entropy(stack, base=base) /
+            stats.entropy([1] * stack.shape[0], base=base))
+
+    def get_regularity(self, weighted=True, base=2):
+        return {
+        'consitency': 1 - self.jsd(weighted=weighted, base=base), 
+        'concentration': self.concentration(base=base)}

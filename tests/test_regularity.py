@@ -210,3 +210,33 @@ def test_get_regularity(wave_objs):
         pytest.approx(res['fwh']) ==
         pytest.approx(res['fwd']) ==
         pytest.approx(res['pwd']) == 0)
+
+
+def test_jsd():
+    obj1 = regularity.ActivityRegularity(
+        ['red', 'blue', 'yellow'],
+        [[1. / 2, 1. / 2, 0], [1. / 2, 0, 1. / 2]])
+
+    obj2 = regularity.ActivityRegularity(
+        ['red', 'blue', 'yellow'],
+        [[.5, .5, 0], [0, 0.5, .5], [.5, .25, .25]])
+
+    obj3 = regularity.ActivityRegularity(
+        ['red', 'blue', 'yellow'],
+        [[1.5, 1.5, 0], [0, 0.5, .5]])
+
+    assert obj1.jsd() == 0.5
+    assert pytest.approx(obj2.jsd()) == 0.38791850267113315
+    assert pytest.approx(obj3.jsd(True)) == 0.40563906222956647
+
+
+def test_concentration():
+    obj1 = regularity.ActivityRegularity(
+        ['forum', 'content'],
+        [[1, 1], [1, 1]])
+    obj2 = regularity.ActivityRegularity(
+        ['forum', 'content'],
+        [[3, 1], [3, 2]])
+
+    assert obj1.concentration() == 0
+    assert obj2.concentration() > obj1.concentration()

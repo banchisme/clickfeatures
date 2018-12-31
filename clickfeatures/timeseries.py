@@ -49,7 +49,7 @@ def aggregate(timestamps, weights, window, num_groups, agg_fun):
 
 
 class TimeSeries(object):
-    def __init__(self, ts, weigths=None, start=0, end=None, unit='minute'):
+    def __init__(self, ts, weights=None, start=0, end=None, unit='minute'):
         r"""
             time is stored based on the unit
         """
@@ -58,7 +58,7 @@ class TimeSeries(object):
             'not supported unit')
         self.unit = unit
         self.ts = list(ts)
-        self.weights = list(weigths or [1] * len(ts))
+        self.weights = list(weights or [1] * len(ts))
         self.start = int(math.floor(start))
         self.end = int((end or math.ceil(max(ts))))
 
