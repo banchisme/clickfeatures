@@ -132,9 +132,9 @@ class TimeRegularity(object):
                 res += sim
                 size += 1
         if size == 0:
-            print(profile)
-            print(self.ts.get_timestamps())
-        return 1. * res / size
+            return np.nan
+        else:
+            return 1. * res / size
 
     def _fft(self, freq, signal, sample_space):
         r"""give the signal magnitude based on fourier transformation
@@ -315,5 +315,7 @@ class ActivityRegularity(object):
             activity regularity
         """
         return {
-            'consitency': 1 - self.jsd(weighted=weighted, base=base),
+            'consistency': (
+                1 - self.jsd(weighted=weighted, base=base) / 
+                math.log(self.activities.shape[0], base)),
             'concentration': self.concentration(base=base)}
