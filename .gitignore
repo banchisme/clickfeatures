@@ -5,3 +5,4 @@ build/
 .cache
 venv
 .ipynb_checkpoints/
+.idea/

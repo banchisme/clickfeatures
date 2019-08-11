@@ -6,7 +6,8 @@ Two major features are implemented:
 2. procrastination
 
 Following indicators are available to measure regularity:
-|indicator|meaning|dimension|
+
+|indicator|meaning|dimension|  
 |---|---|---|
 |pdh|peak on day hour|intra-day|
 |pwd|peak on week day|intra-week|
