@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy import stats
 import itertools
-import timeseries
+from clickfeatures import timestamps
 import collections
 
 
@@ -11,7 +11,7 @@ class TimeRegularity(object):
         r"""
             time is stored based on the unit
         """
-        self.ts = timeseries.TimeSeries(*args, **kwargs)
+        self.ts = timestamps.TimeStamps(*args, **kwargs)
 
     def _stack(self, window, windows_per_layer, dtype=np.float64):
         r"""
@@ -46,7 +46,7 @@ class TimeRegularity(object):
                 lambda group: int(sum(group) > 0))
             num_groups = int(math.ceil(
                 float(self.ts.get_duration()) / self.ts.quantify('day')))
-            ts, ws = timeseries.aggregate(ts, ws, 24, num_groups, sum)
+            ts, ws = timestamps.aggregate(ts, ws, 24, num_groups, sum)
         elif self.ts.get_unit() == 'day':
             ts, ws = self.ts.aggregate(1, sum)
         else:
@@ -111,7 +111,7 @@ class TimeRegularity(object):
         act2 = self._active_days(p2)
         scale = 1. / max(len(act1.union(act2)), 1)
         numerator = p1 - p2
-        denominator = np.array(map(lambda x: float(max(x, 1)), (p1 + p2)))
+        denominator = np.array(list(map(lambda x: float(max(x, 1)), (p1 + p2))))
         res = ((numerator / denominator) ** 2).sum()
 
         return 1 - scale * res
@@ -178,13 +178,13 @@ class TimeRegularity(object):
     def pdh(self):
         window = self.ts.quantify('hour')
         layer = self.ts.quantify('day')
-        window_per_layer = layer / window
+        window_per_layer = layer // window
         return self._time_based_reg(window, window_per_layer)
 
     def pwd(self):
         window = self.ts.quantify('day')
         layer = self.ts.quantify('week')
-        window_per_layer = layer / window
+        window_per_layer = layer // window
         return self._time_based_reg(window, window_per_layer)
 
     def ws1(self):

@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy import stats
 import itertools
-import timeseries
+from clickfeatures import timestamps
 import collections
 
 class WeightedMean(object):
@@ -12,7 +12,7 @@ class WeightedMean(object):
             weight_function (fun), a (start, end) -> (0, inf) function
         """
         self.f = weight_function
-        self.ts = timeseries.TimeSeries(*args, **kwargs)
+        self.ts = timestamps.TimeStamps(*args, **kwargs)
 
     def get_procrastination(self, normalize_time=True, normalize_weight=True):
         timestamps = np.array(self.ts.get_timestamps(), dtype=np.float)
@@ -23,5 +23,5 @@ class WeightedMean(object):
         if normalize_weight:
             effort = effort / effort.sum()  # normalize
 
-        weight = np.array(map(self.f, timestamps), dtype=np.float)
+        weight = np.array(list(map(self.f, timestamps)), dtype=np.float)
         return np.dot(weight, effort)

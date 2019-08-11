@@ -1,4 +1,4 @@
-from clickfeatures import timeseries
+from clickfeatures import timestamps
 import pytest
 import random
 import numpy as np
@@ -8,12 +8,12 @@ import numpy as np
 def ts_obj():
     ts = [0, 60, 120, 240, 300]
     ws = [1, 2, 100, 1, 1]
-    return timeseries.TimeSeries(ts, ws)
+    return timestamps.TimeStamps(ts, ws)
 
 
 @pytest.fixture
 def null_obj():
-    return timeseries.TimeSeries([], end=1)
+    return timestamps.TimeStamps([], end=1)
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def rand_obj():
     length = 60 * 24  # 1 day
     ts = random.sample(range(length), length / 2)
     ws = random.sample(range(length), length / 2)
-    obj = timeseries.TimeSeries(ts, ws, end=length)
+    obj = timestamps.TimeStamps(ts, ws, end=length)
     return obj
 
 
@@ -49,7 +49,7 @@ def test_active(rand_obj):
 def test_group():
     ts = [i * 30 for i in range(48)]
     ws = range(48)
-    obj = timeseries.TimeSeries(ts, ws)
+    obj = timestamps.TimeStamps(ts, ws)
 
     expected_ts = [[30 * i, 30 * (i + 1)] for i in range(0, 48, 2)]
     expected_ws = [[i, i + 1] for i in range(0, 48, 2)]
@@ -62,7 +62,7 @@ def test_group():
 def test_agg():
     ts = range(24 * 60)
     ws = range(24 * 60)
-    obj = timeseries.TimeSeries(ts, ws)
+    obj = timestamps.TimeStamps(ts, ws)
 
     expects = [sum(range(60)) + 60 * 60 * i for i in range(24)]
     _, results = obj.aggregate(60, sum)
@@ -72,7 +72,7 @@ def test_agg():
 def test_to_signal():
     ts = [1, 5, 10]
     ws = [1, 1, 1]
-    obj = timeseries.TimeSeries(ts, ws)
+    obj = timestamps.TimeStamps(ts, ws)
 
     expect_ts = range(11)
     expect_ws = [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1]

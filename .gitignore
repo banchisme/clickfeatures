@@ -4,4 +4,4 @@ build/
 *.log
 .cache
 venv
-
+.ipynb_checkpoints/

@@ -45,13 +45,28 @@ def aggregate(timestamps, weights, window, num_groups, agg_fun):
             aggregated weights (list of lists)
     """
     time_groups, weight_groups = group(timestamps, weights, window, num_groups)
-    return range(len(time_groups)), map(agg_fun, weight_groups)
+    return list(range(len(time_groups))), list(map(agg_fun, weight_groups))
 
 
-class TimeSeries(object):
+class TimeStamps(object):
     def __init__(self, ts, weights=None, start=0, end=None, unit='minute'):
         r"""
-            time is stored based on the unit
+            a time series object
+
+            Argument:
+                ts (list): a list of timestamps where a particular event happens.
+                            Example: [1, 2, 3, 4] means an event happens at time 1, 2, 3, and 4
+                weights (list): a list of weights corresponding to the events.
+                            Example: [1, 1, 1 ,1] means the event has equal weight of 1 at 4 times
+                start (int): the starting time of events, default to 0
+                end (int): the end time of events, default to infer as the last/max value of ts
+                unit (str): unit in ts
+
+            Example:
+                if you want to start an object that indicates a student works:
+                1 hour every day in the weekday, and 2 hours in saturday.
+
+                ts_obj = TimeStamps([0, 1, 2, 3, 4, 5], [1, 1, 1, 1, 1, 2], end = 6, unit='hour')
         """
         assert (
             unit in ['second', 'minute', 'hour', 'day', 'week'],
@@ -112,7 +127,7 @@ class TimeSeries(object):
         base_unit = size_dictionary[self.get_unit()]
         size_unit = size_dictionary[time_unit]
         if size_unit / base_unit >= 1:
-            return size_unit / base_unit
+            return size_unit // base_unit
         else:
             raise ValueError(
                 'time unit "{}"" is smaller than the base unit: "{}"'.
