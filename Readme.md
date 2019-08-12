@@ -24,8 +24,10 @@ Following indicators are availabel to measure procrastination
 + WeightedMean
 
 ### Installation
-`git clone https://github.com/banchisme/clickfeatures.git`
-`pip install clickfeatures/`
+```bash
+git clone https://github.com/banchisme/clickfeatures.git
+pip install clickfeatures/
+```
 
 ### Quick Start
 detailed examples are in `doc/regularity_examples.ipynb` and `doc/procrastination_examples.ipynb`
@@ -34,3 +36,4 @@ detailed examples are in `doc/regularity_examples.ipynb` and `doc/procrastinatio
 ### Todo
 1. write `doc/procrastination_examples.ipynb` to demonstrate the use of procrastination indicators
 2. better documentation in the functions
+3. write an example for activity regularity
