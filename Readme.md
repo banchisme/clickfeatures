@@ -34,6 +34,6 @@ detailed examples are in `doc/regularity_examples.ipynb` and `doc/procrastinatio
 
 
 ### Todo
-1. write `doc/procrastination_examples.ipynb` to demonstrate the use of procrastination indicators
+1. better explain `timestamp.TimeStamps` in `doc/procrastination_examples.ipynb`
 2. better documentation in the functions
 3. write an example for activity regularity

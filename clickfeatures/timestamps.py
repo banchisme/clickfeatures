@@ -51,7 +51,7 @@ def aggregate(timestamps, weights, window, num_groups, agg_fun):
 class TimeStamps(object):
     def __init__(self, ts, weights=None, start=0, end=None, unit='minute'):
         r"""
-            a time series object
+            a timestamp object
 
             Argument:
                 ts (list): a list of timestamps where a particular event happens.
